@@ -1,0 +1,230 @@
+SELECT *
+FROM (SELECT *
+      FROM (
+          SELECT
+             I.INVOICE_GID,
+             TO_CHAR(I.INSERT_DATE, 'YYYYMMDD') INSERT_DATE,
+             I.INVOICE_XID,
+             I.INVOICE_TYPE,
+             I.INVOICE_SOURCE,
+             I.INVOICE_NUMBER,
+             I.SERVPROV_ALIAS_QUAL_GID,
+             I.SERVPROV_ALIAS_VALUE,
+             TO_CHAR(I.INVOICE_DATE, 'YYYYMMDD') INVOICE_DATE,
+             I.CURRENCY_GID,
+             I.NET_AMOUNT_DUE,
+             I.NET_AMOUNT_DUE_GID,
+             I.NET_AMOUNT_BASE,
+             TO_CHAR(I.NET_DUE_DATE, 'YYYYMMDD') NET_DUE_DATE,
+             I.PAYMENT_METHOD_CODE_GID,
+             TO_CHAR(I.DATE_RECEIVED, 'YYYYMMDD') DATE_RECEIVED,
+             I.INDICATOR,
+             I.USER_DEFINED1_ICON_GID,
+             I.SERVPROV_GID,
+             I.INSERT_USER,
+             I.UPDATE_USER,
+             TO_CHAR(I.UPDATE_DATE, 'YYYYMMDD') UPDATE_DATE,
+             IL.LINEITEM_SEQ_NO,
+             IL.DESCRIPTION,
+             IL.FREIGHT_CHARGE,
+             IL.FREIGHT_CHARGE_GID,
+             IL.FREIGHT_CHARGE_BASE,
+             IR.INVOICE_REFNUM_QUAL_GID,
+             IR.INVOICE_REFNUM_VALUE,
+             IST1.STATUS_TYPE_GID APPROVAL,
+             IST1.STATUS_VALUE_GID APPROVAL_VALUE,
+             IST2.STATUS_TYPE_GID MATCH,
+             IST2.STATUS_VALUE_GID MATCH_VALUE
+      FROM INVOICE I
+               INNER JOIN
+           INVOICE_LINEITEM IL ON I.INVOICE_GID = IL.INVOICE_GID
+               INNER JOIN
+           INVOICE_REFNUM IR ON IR.INVOICE_GID = I.INVOICE_GID AND
+                                INVOICE_REFNUM_QUAL_GID IN ('NBL.CUST_PO_GROUP', 'NBL.OR_GROUP', 'NBL.LOAD_NO')
+               INNER JOIN
+           INVOICE_STATUS IST1 ON IST1.INVOICE_GID = I.INVOICE_GID AND  IST1.STATUS_TYPE_GID IN ('NBL/MX.APPROVAL') INNER JOIN
+            INVOICE_STATUS IST2 ON IST2.INVOICE_GID = I.INVOICE_GID AND IST2.STATUS_TYPE_GID IN ('NBL/MX.MATCH')
+      WHERE I.DOMAIN_NAME = 'NBL/MX'
+        AND I.INSERT_DATE >= TO_DATE('2024-10-01','yyyy-MM-dd')
+        AND IST1.STATUS_VALUE_GID IN ('NBL/MX.APPROVAL_NOT_APPROVED')
+            --('NBL/MX.MATCH_MATCHED_AUTO', 'NBL/MX.APPROVAL_NOT_APPROVED', 'NBL/MX.APPROVAL_FAILED')
+        --AND I.INVOICE_XID = '20240131-0257'
+      GROUP BY I.INVOICE_GID,
+               I.INSERT_DATE,
+               I.INVOICE_XID,
+               I.INVOICE_TYPE,
+               I.INVOICE_SOURCE,
+               I.INVOICE_NUMBER,
+               I.SERVPROV_ALIAS_QUAL_GID,
+               I.SERVPROV_ALIAS_VALUE,
+               I.INVOICE_DATE,
+               I.CURRENCY_GID,
+               I.NET_AMOUNT_DUE,
+               I.NET_AMOUNT_DUE_GID,
+               I.NET_AMOUNT_BASE,
+               I.NET_DUE_DATE,
+               I.PAYMENT_METHOD_CODE_GID,
+               I.DATE_RECEIVED,
+               I.INDICATOR,
+               I.USER_DEFINED1_ICON_GID,
+               I.SERVPROV_GID,
+               I.INSERT_USER,
+               I.UPDATE_USER,
+               I.UPDATE_DATE,
+               IL.LINEITEM_SEQ_NO,
+               IL.DESCRIPTION,
+               IL.FREIGHT_CHARGE,
+               IL.FREIGHT_CHARGE_GID,
+               IL.FREIGHT_CHARGE_BASE,
+              IR.INVOICE_REFNUM_QUAL_GID,
+              IR.INVOICE_REFNUM_VALUE,
+              IST1.STATUS_TYPE_GID,
+              IST1.STATUS_VALUE_GID,
+              IST2.STATUS_TYPE_GID,
+              IST2.STATUS_VALUE_GID
+            ) T
+               PIVOT
+               (
+               MAX(INVOICE_REFNUM_VALUE)
+               FOR INVOICE_REFNUM_QUAL_GID IN ('NBL.CUST_PO_GROUP' CUST_PO_GROUP,'NBL.LOAD_NO' LOAD_NO,'NBL.OR_GROUP' OR_GROUP)
+               ) PVT1
+               PIVOT
+               (
+               MAX(APPROVAL_VALUE)
+               FOR APPROVAL IN ('NBL/MX.APPROVAL' APPROVAL)
+               ) PVT2
+               PIVOT
+               (
+               MAX(MATCH_VALUE)
+               FOR MATCH IN ('NBL/MX.MATCH' MATCH)
+               ) PVT3
+      ) G
+ORDER BY INVOICE_GID ASC
+;
+
+
+
+/*
+I.INVOICE_GID,
+I.INVOICE_XID,
+I.INVOICE_TYPE,
+I.INVOICE_SOURCE,
+I.INVOICE_NUMBER,
+I.SERVPROV_ALIAS_QUAL_GID,
+I.SERVPROV_ALIAS_VALUE,
+I.INVOICE_DATE,
+I.CURRENCY_GID,
+I.NET_AMOUNT_DUE,
+I.NET_AMOUNT_DUE_GID,
+I.NET_AMOUNT_BASE,
+I.NET_DUE_DATE,
+I.PAYMENT_METHOD_CODE_GID,
+I.DATE_RECEIVED,
+I.INDICATOR,
+I.USER_DEFINED1_ICON_GID,
+I.SERVPROV_GID,
+I.INSERT_USER,
+I.INSERT_DATE,
+I.UPDATE_USER,
+I.UPDATE_DATE,
+IL.LINEITEM_SEQ_NO,
+IL.DESCRIPTION,
+IL.FREIGHT_CHARGE,
+IL.FREIGHT_CHARGE_GID,
+IL.FREIGHT_CHARGE_BASE,
+IR.INVOICE_REFNUM_QUAL_GID,
+IR.INVOICE_REFNUM_VALUE,
+IST.STATUS_TYPE_GID,
+IST.STATUS_VALUE_GID
+*/
+
+
+
+
+
+
+
+
+
+
+
+SELECT I.INVOICE_GID,
+       I.INSERT_DATE,
+             I.INVOICE_XID,
+             I.INVOICE_TYPE,
+             I.INVOICE_SOURCE,
+             I.INVOICE_NUMBER,
+             I.SERVPROV_ALIAS_QUAL_GID,
+             I.SERVPROV_ALIAS_VALUE,
+             I.INVOICE_DATE,
+             I.CURRENCY_GID,
+             I.NET_AMOUNT_DUE,
+             I.NET_AMOUNT_DUE_GID,
+             I.NET_AMOUNT_BASE,
+             I.NET_DUE_DATE,
+             I.PAYMENT_METHOD_CODE_GID,
+             I.DATE_RECEIVED,
+             I.INDICATOR,
+             I.USER_DEFINED1_ICON_GID,
+             I.SERVPROV_GID,
+             I.INSERT_USER,
+             I.UPDATE_USER,
+             I.UPDATE_DATE,
+             IL.LINEITEM_SEQ_NO,
+             IL.DESCRIPTION,
+             IL.FREIGHT_CHARGE,
+             IL.FREIGHT_CHARGE_GID,
+             IL.FREIGHT_CHARGE_BASE,
+             IR.INVOICE_REFNUM_QUAL_GID,
+             IR.INVOICE_REFNUM_VALUE,
+             IST1.STATUS_TYPE_GID APPROVAL,
+             IST1.STATUS_VALUE_GID APPROVAL_VALUE,
+             IST2.STATUS_TYPE_GID MATCH,
+             IST2.STATUS_VALUE_GID MATCH_VALUE
+      FROM INVOICE I
+               INNER JOIN
+           INVOICE_LINEITEM IL ON I.INVOICE_GID = IL.INVOICE_GID
+               INNER JOIN
+           INVOICE_REFNUM IR ON IR.INVOICE_GID = I.INVOICE_GID AND
+                                INVOICE_REFNUM_QUAL_GID IN ('NBL.CUST_PO_GROUP', 'NBL.OR_GROUP', 'NBL.LOAD_NO')
+               INNER JOIN
+           INVOICE_STATUS IST1 ON IST1.INVOICE_GID = I.INVOICE_GID AND  IST1.STATUS_TYPE_GID IN ('NBL/MX.APPROVAL') INNER JOIN
+            INVOICE_STATUS IST2 ON IST2.INVOICE_GID = I.INVOICE_GID AND IST2.STATUS_TYPE_GID IN ('NBL/MX.MATCH')
+      WHERE I.DOMAIN_NAME = 'NBL/MX'
+        AND I.INSERT_DATE >= TO_DATE('2024-10-01','yyyy-MM-dd')
+        AND IST1.STATUS_VALUE_GID IN ('NBL/MX.APPROVAL_NOT_APPROVED')
+            --('NBL/MX.MATCH_MATCHED_AUTO', 'NBL/MX.APPROVAL_NOT_APPROVED', 'NBL/MX.APPROVAL_FAILED')
+        --AND I.INVOICE_XID = '20240131-0257'
+      GROUP BY I.INVOICE_GID,
+               I.INSERT_DATE,
+               I.INVOICE_XID,
+               I.INVOICE_TYPE,
+               I.INVOICE_SOURCE,
+               I.INVOICE_NUMBER,
+               I.SERVPROV_ALIAS_QUAL_GID,
+               I.SERVPROV_ALIAS_VALUE,
+               I.INVOICE_DATE,
+               I.CURRENCY_GID,
+               I.NET_AMOUNT_DUE,
+               I.NET_AMOUNT_DUE_GID,
+               I.NET_AMOUNT_BASE,
+               I.NET_DUE_DATE,
+               I.PAYMENT_METHOD_CODE_GID,
+               I.DATE_RECEIVED,
+               I.INDICATOR,
+               I.USER_DEFINED1_ICON_GID,
+               I.SERVPROV_GID,
+               I.INSERT_USER,
+               I.UPDATE_USER,
+               I.UPDATE_DATE,
+               IL.LINEITEM_SEQ_NO,
+               IL.DESCRIPTION,
+               IL.FREIGHT_CHARGE,
+               IL.FREIGHT_CHARGE_GID,
+               IL.FREIGHT_CHARGE_BASE,
+              IR.INVOICE_REFNUM_QUAL_GID,
+              IR.INVOICE_REFNUM_VALUE,
+              IST1.STATUS_TYPE_GID,
+              IST1.STATUS_VALUE_GID,
+              IST2.STATUS_TYPE_GID,
+              IST2.STATUS_VALUE_GID
