@@ -19,7 +19,6 @@ and exists(
         )
 
 --BS_SHIPMENTS_ON_SPOT_MX
-
 select s.shipment_gid 
 from shipment s 
 where user_Defined4_icon_gid = 'NBL.SPOT' 
