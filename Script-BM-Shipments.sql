@@ -1,7 +1,10 @@
 --BS_SHIPMENTS_NO_APPOINTMENT_MX
 
-select shipment_gid 
-from shipment s 
+select s.shipment_gid 
+from shipment s inner join
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join
+location loc on loc.location_gid = ss.location_gid inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid
 where exists(
                 select 1 
                 from shipment_stop ss 
@@ -9,7 +12,9 @@ where exists(
                 and stop_num = 1 
                 and APPOINTMENT_PICKUP is null
             ) 
-and s.start_time between sysdate and sysdate + 3 
+--and s.start_time between sysdate and sysdate + 3 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and 
+CAST(from_tz(cast(sysdate + 3 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)
 and exists(
             select 1 
             from shipment_status ss 
@@ -17,6 +22,15 @@ and exists(
             and ss.status_type_gid = 'NBL/MX.SHIPMENT_SENT_TO_FK_AM' 
             and ss.status_value_gid in ('NBL/MX.SHIPMENT_NOT_SENT_TO_FK_AM','NBL/MX.APPOINTMENT_AUTO_SCHEDULE_FAILED')
         )
+
+---------------------
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join
+location loc on loc.location_gid = ss.location_gid inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid
+
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) > CAST(from_tz(cast(sysdate - 24/24 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)
+
+------------------
 
 --BS_SHIPMENTS_ON_SPOT_MX
 select s.shipment_gid 
