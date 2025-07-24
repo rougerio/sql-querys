@@ -196,22 +196,22 @@ AND S.DOMAIN_NAME = 'NBL'
 AND S.user_defined1_icon_gid is null
 
 --------------Final Query-------------------
-select s.shipment_gid  
+select s.shipment_gid 
 from shipment s inner join 
 shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
 location loc on loc.location_gid = ss.location_gid inner join 
 time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
-where exists(
+where exists( 
                 select distinct 1 
                 from tender_collaboration tc, tender_collaboration_status tcs, TENDER_COLLAB_SERVPROV tcc 
                 where tc.i_transaction_no = tcs.i_transaction_no 
                 and tc.i_transaction_no = tcc.i_transaction_no 
                 and tc.shipment_gid = s.shipment_gid 
                 AND tcs.status_value_gid = 'NBL/MX.TENDER.SECURE RESOURCES_ACCEPTED' 
-                AND TCC.SERVPROV_GID <> S.SERVPROV_GID
-        )
---and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 2 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
---CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
+                AND TCC.SERVPROV_GID <> S.PLANNED_SERVPROV_GID 
+        ) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 2 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
+CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
 AND S.DOMAIN_NAME = 'NBL/MX'
 
 
@@ -227,9 +227,48 @@ AND TCC.SERVPROV_GID <> S.SERVPROV_GID
 
 --BS_SHIPMENTS_NO_APPOINTMENT_MX
 ------------------------------------------------------------------------------------------------------------
-select shipment_gid from shipment s where exists(select 1 from shipment_stop ss where ss.shipment_gid = s.shipment_gid and stop_num = 1 and APPOINTMENT_PICKUP is null) and s.start_time between sysdate and sysdate + 3 and exists(select 1 from shipment_status ss where ss.shipment_gid = s.shipment_gid and ss.status_type_gid = 'NBL/MX.SHIPMENT_SENT_TO_FK_AM' and ss.status_value_gid in ('NBL/MX.SHIPMENT_NOT_SENT_TO_FK_AM','NBL/MX.APPOINTMENT_AUTO_SCHEDULE_FAILED'))
+select shipment_gid 
+from shipment s 
+where exists(
+                select 1 
+                from shipment_stop ss 
+                where ss.shipment_gid = s.shipment_gid 
+                and stop_num = 1 
+                and APPOINTMENT_PICKUP is null
+        ) 
+and s.start_time between sysdate and sysdate + 3 
+and exists(
+                select 1 
+                from shipment_status ss 
+                where ss.shipment_gid = s.shipment_gid 
+                and ss.status_type_gid = 'NBL/MX.SHIPMENT_SENT_TO_FK_AM' 
+                and ss.status_value_gid in ('NBL/MX.SHIPMENT_NOT_SENT_TO_FK_AM','NBL/MX.APPOINTMENT_AUTO_SCHEDULE_FAILED')
+        )
 
 
+--------------Final Query-------------------
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where exists( 
+                select 1 
+                from shipment_stop ss 
+                where ss.shipment_gid = s.shipment_gid 
+                and stop_num = 1 
+                and APPOINTMENT_PICKUP is null 
+        )  
+and exists( 
+                select 1  
+                from shipment_status ss 
+                where ss.shipment_gid = s.shipment_gid 
+                and ss.status_type_gid = 'NBL/MX.SHIPMENT_SENT_TO_FK_AM'  
+                and ss.status_value_gid in ('NBL/MX.SHIPMENT_NOT_SENT_TO_FK_AM','NBL/MX.APPOINTMENT_AUTO_SCHEDULE_FAILED') 
+        ) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
+CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
+and s.domain_name = 'NBL/MX'
 
 /*
 TIMEOUT:
@@ -254,9 +293,9 @@ SECURE RESOURCES_ACCEPTED
 
 --------Saved Querys------------
 /*
-BS_ACTUAL_VS_TENDERED_MX
+BS_ACTUAL_VS_TENDERED-MX - ok
 BS_NOT_TENDERED-MX - Ok
-BS_TENDER_FAILED_TIMEOUT_MX - Ok
+BS_TENDER_FAILED_TIMEOUT-MX - Ok
 BS_SHIPMENTS_NOT_ACCEPTED-MX - Ok
-BS_SHIPMENTS_NO_APPOINTMENT_MX
+BS_SHIPMENTS_NO_APPOINTMENT-MX - OK
 */
