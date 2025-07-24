@@ -11,7 +11,7 @@ WHERE S.TRANSPORT_MODE_GID NOT IN ('NBL/MX.PICKUP')
         where SS.STATUS_TYPE_GID ='NBL/MX.DYNAMIC_ROUTING_VALID' 
         AND SS.STATUS_VALUE_GID='NBL/MX.DYNAMIC_ROUTING_VALID-NO' 
         AND S.SHIPMENT_GID=SS.SHIPMENT_GID) 
-        */ 
+        */
 AND exists(
         select 1 
         from shipment_status ss1 
@@ -31,23 +31,22 @@ time_zone tz on tz.time_zone_gid = loc.time_zone_gid
 WHERE S.TRANSPORT_MODE_GID NOT IN ('NBL/MX.PICKUP')  
 AND exists( 
         select 1  
+        from shipment_status ss  
+        where SS.STATUS_TYPE_GID ='NBL/MX.DYNAMIC_ROUTING_VALID'  
+        AND SS.STATUS_VALUE_GID='NBL/MX.DYNAMIC_ROUTING_VALID-NO'  
+        AND S.SHIPMENT_GID=SS.SHIPMENT_GID)  
+AND exists( 
+        select 1  
         from shipment_status ss1  
-        where S.SHIPMENT_GID = SS1.SHIPMENT_GID  
+        where S.SHIPMENT_GID=SS1.SHIPMENT_GID  
         and SS1.STATUS_TYPE_GID='NBL/MX.SECURE RESOURCES'  
-        AND SS1.STATUS_VALUE_GID IN ('NBL/MX.SECURE RESOURCES_DECLINED', 'NBL/MX.SECURE RESOURCES_WITHDRAWN') 
+        AND SS1.STATUS_VALUE_GID NOT IN ('NBL/MX.SECURE RESOURCES_ACCEPTED') 
         )  
-and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 1 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
-CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
-AND S.DOMAIN_NAME = 'NBL/MX' 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate + 1 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
+CAST(from_tz(cast(sysdate + 10 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
 
-select * 
-from shipment_status ss1  
-where SS1.SHIPMENT_GID= 'NBL/MX.MX51067858'
-and SS1.STATUS_TYPE_GID='NBL/MX.SECURE RESOURCES'  
-AND SS1.STATUS_VALUE_GID IN ('NBL/MX.SECURE RESOURCES_DECLINED', 'NBL/MX.SECURE RESOURCES_WITHDRAWN')
 
 --BS_TENDER_FAILED_TIMEOUT_MX
------------------------------------------------------------------------------------------------------------
 select s.shipment_gid 
 from shipment s inner join 
 shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
@@ -88,11 +87,18 @@ shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner j
 location loc on loc.location_gid = ss.location_gid inner join 
 time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
 where exists( 
-        select 1  
-        from shipment_status ss1  
-        where S.SHIPMENT_GID = SS1.SHIPMENT_GID  
-        and SS1.STATUS_TYPE_GID='NBL/MX.SECURE RESOURCES'  
-        AND SS1.STATUS_VALUE_GID IN ('NBL/MX.SECURE RESOURCES_NO RESPONSE', 'NBL/MX.SECURE RESOURCES_NO RESOURCES')  
+        select distinct 1 
+        from tender_collaboration tc, tender_collaboration_status tcs 
+        where tc.i_transaction_no = tcs.i_transaction_no 
+        and tc.shipment_gid = s.shipment_gid 
+        and tcs.status_value_gid = 'NBL/MX.TENDER.SECURE RESOURCES_TENDERED' 
+        )  
+and exists(  
+        select 1 
+        from shipment_status drg2 
+        where s.shipment_gid = drg2.shipment_gid 
+        and drg2.status_type_gid = 'NBL/MX.DYNAMIC_ROUTING_VALID' 
+        and drg2.status_value_gid in ('NBL/MX.DYNAMIC_ROUTING_VALID-NA','NBL/MX.DYNAMIC_ROUTING_VALID-NO') 
         )  
 and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 3 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
 CAST(from_tz(cast(sysdate + 10 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
@@ -110,7 +116,6 @@ and tc.domain_name = 'NBL/MX'
 
 
 --BS_NOT_TENDERED_MX
-------------------------------------------------------------------------------------------------------------
 select s.shipment_gid 
 from shipment s 
 where exists(
@@ -119,10 +124,9 @@ where exists(
                 where tc.i_transaction_no = tcs.i_transaction_no 
                 and tc.i_transaction_no = tcc.i_transaction_no 
                 and tc.shipment_gid = s.shipment_gid 
-                and tcs.status_value_gid not in ('NBL/MX.TENDER.SECURE RESOURCES_DECLINED','NBL/MX.TENDER.SECURE RESOURCES_WITHDRAWN','NBL/MX.TENDER.SECURE RESOURCES_TIMED OUT','NBL/MX.TENDER.SECURE RESOURCES_ACCEPTED') 
-                and TCC.SERVPROV_GID = S.SERVPROV_GID 
-                and TC.RATE_GEO_GID != 'NBL/MX.DYNAMICROUTING_RR' 
-                and rownum = 1
+                AND tcs.status_value_gid not in ('NBL/MX.TENDER.SECURE RESOURCES_DECLINED','NBL/MX.TENDER.SECURE RESOURCES_WITHDRAWN','NBL/MX.TENDER.SECURE RESOURCES_TIMED OUT','NBL/MX.TENDER.SECURE RESOURCES_ACCEPTED') 
+                AND TCC.SERVPROV_GID = S.SERVPROV_GID 
+                AND TC.RATE_GEO_GID != 'NBL/MX.DYNAMICROUTING_RR' and rownum = 1
             ) 
 AND exists(
                 select 1 
@@ -136,51 +140,7 @@ and exists(
                 from shipment_status drg2 
                 where s.shipment_gid = drg2.shipment_gid 
                 and drg2.status_type_gid = 'NBL/MX.DYNAMIC_ROUTING_STATUS' 
-                and drg2.status_value_gid != 'NBL/MX.DYNAMIC_ROUTING_STATUS_CAPACITY_AVAILABLE'
+                AND drg2.status_value_gid != 'NBL/MX.DYNAMIC_ROUTING_STATUS_CAPACITY_AVAILABLE'
             ) 
 and S.USER_DEFINED1_ICON_GID IS NULL 
 and (s.start_time between (SYSDATE-1) and (SYSDATE+20))
-
-
-select s.shipment_gid 
-from shipment s inner join 
-shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
-location loc on loc.location_gid = ss.location_gid inner join 
-time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
-where exists(  
-        select 1  
-        from shipment_status ss1  
-        where S.SHIPMENT_GID = SS1.SHIPMENT_GID  
-        and SS1.STATUS_TYPE_GID='NBL/MX.SECURE RESOURCES'  
-        AND SS1.STATUS_VALUE_GID IN ('NBL/MX.SECURE RESOURCES_NOT STARTED')  
-        )  
-and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 1 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
-CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
-AND S.DOMAIN_NAME = 'NBL/MX'  
-and S.USER_DEFINED1_ICON_GID IS NULL
-
-
-
-MX51068067,MX51068133,MX51068135,MX51068126,MX51068075,MX51068077,MX51068085,MX51068129,MX51068132,MX51068131,MX51068130
-
-
-
-/*
-TIMEOUT:
-
-SECURE RESOURCES_NO RESPONSE
-SECURE RESOURCES_NO RESOURCES
-
-NOT TENDERED:
-SECURE RESOURCES_NOT STARTED
-
-DECLINED:
-SECURE RESOURCES_DECLINED
-SECURE RESOURCES_WITHDRAWN
-
-TENDERED/pending:
-SECURE RESOURCES_TENDERED
-
-ACEPTADO:
-SECURE RESOURCES_ACCEPTED
-*/
