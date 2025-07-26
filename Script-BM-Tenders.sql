@@ -299,3 +299,26 @@ BS_TENDER_FAILED_TIMEOUT-MX - Ok
 BS_SHIPMENTS_NOT_ACCEPTED-MX - Ok
 BS_SHIPMENTS_NO_APPOINTMENT-MX - OK
 */
+
+
+
+/*
+BS_ACTUAL_VS_TENDERED-MX
+Embarques donde el carrier actual es distinto al carrier que acepto el tender
+
+BS_NOT_TENDERED-MX
+No se ha enviado la oferta al carrier
+
+BS_TENDER_FAILED_TIMEOUT-MX
+Ofertas sin respuesta
+
+BS_SHIPMENTS_NOT_ACCEPTED-MX
+Embarque no aceptados por el carrier o con oferta retirada
+
+BS_MISSED_PICKUPS_MX
+Embarque que su fecha de pick up es anterior a la fecha y hora actual
+
+BS_SHIPMENTS_NO_APPOINTMENT-MX
+Embarques que no tienen Pickup appointment
+
+*/
