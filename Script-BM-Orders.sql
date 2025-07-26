@@ -26,7 +26,7 @@ WHERE exists(
 AND ORR.USER_DEFINED1_ICON_GID IN ('NBL.APPT_SHCEDULED' ,'NBL.SCHEDULED_APPT' ,'NBL.CAR_SCHEDULED_APPT')
 AND ORR.DOMAIN_NAME = 'NBL/MX'
 
-
+-------------------------------------------------------------------------------
 --OR_UNASSIGNED_ORDERS_MX
 
 select distinct ors.order_Release_gid 
@@ -35,7 +35,30 @@ where status_value_gid = 'NBL/MX.PLANNING_UNSCHEDULED'
 and status_type_gid = 'NBL/MX.PLANNING' 
 and update_date > sysdate - 7
 
+-----------Final Query-----------
 
+select distinct orl.order_release_gid 
+from order_release_status ors inner join 
+order_release or1 on ors.order_release_gid = or1.order_release_gid 
+--inner join 
+--location loc on loc.location_gid = orl.source_location_gid inner join 
+--time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where ors.status_value_gid = 'NBL/MX.PLANNING_UNSCHEDULED'  
+and ors.status_type_gid = 'NBL/MX.PLANNING' 
+and orl.domain_name = 'NBL/MX'
+and UTC.GET_LOCAL_DATE(ors.update_date, orl.source_location_gid) > CAST(from_tz(cast(sysdate - 7 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+
+SELECT ORL.ORDER_RELEASE_GID, UTC.GET_LOCAL_DATE(ORS.UPDATE_DATE, ORL.SOURCE_LOCATION_GID), TZ.TIME_ZOME_XID
+FROM ORDER_RELEASE ORL INNER JOIN
+ORDER_RELEASE_STATUS ORS ON ORL.ORDER_RELEASE_GID = ORS.ORDER_RELEASE_GID INNER JOIN 
+LOCATION LOC ON LOC.LOCATION_GID = ORL.SOURCE_LOCATION_GID INNER JOIN
+TIME_ZONE TZ ON TZ.TIME_ZONE_GID = LOC.TIME_ZONE_GID
+WHERE ORS.STATUS_VALUE_GID = 'NBL/MX.PLANNING_UNSCHEDULED' 
+AND ORS.STATUS_TYPE_GID = 'NBL/MX.PLANNING' 
+AND ORL.DOMAIN_NAME = 'NBL/MX' 
+AND UTC.GET_LOCAL_DATE(ORS.UPDATE_DATE, ORL.SOURCE_LOCATION_GID) > CAST(FROM_TZ(CAST(SYSDATE - 7 AS TIMESTAMP), 'UTC') AT TIME ZONE TZ.TIME_ZOME_XID AS DATE) 
+
+------------------------------------------------------------------------------
 --OR_WITH_NO_PENDING_REASON_MX
 
 select order_Release_gid 
@@ -45,6 +68,7 @@ and sysdate > insert_date + 2
 and indicator = 'W' 
 and domain_name = 'NBL/MX'
 
+------------------------------------------------------------------------------
 --OR_WITH_PENDING_REASON_MX
 
 select order_Release_gid 
@@ -54,6 +78,7 @@ and sysdate > insert_date + 2
 and indicator = 'W' 
 and domain_name = 'NBL/MX'
 
+------------------------------------------------------------------------------
 --OR_WITH_PENDING_REASON_MX
 
 select order_Release_gid 
@@ -63,7 +88,7 @@ and sysdate > insert_date + 2
 and indicator = 'W' 
 and domain_name = 'NBL/MX'
 
-
+--------------------------------------------------------------------------
 --OR_WITHDRAWN_ORDERS_MX
 
 select distinct om.order_Release_gid 
@@ -77,6 +102,7 @@ where om.shipment_gid in (
                         )
 
 
+--------------------------------------------------------------------------
 --OR_RUSH_ORDERS_MX
 
 select order_release_gid 
