@@ -163,6 +163,107 @@ CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_x
 AND S.DOMAIN_NAME = 'NBL/MX'  
 --and S.USER_DEFINED1_ICON_GID IS NULL
 
+--MXC
+--BS_NOT_TENDERED_MXC-MX
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where exists(  
+        select 1  
+        from shipment_status ss1  
+        where S.SHIPMENT_GID = SS1.SHIPMENT_GID  
+        and SS1.STATUS_TYPE_GID='NBL/MX.SECURE RESOURCES'  
+        AND SS1.STATUS_VALUE_GID IN ('NBL/MX.SECURE RESOURCES_NOT STARTED')  
+        )  
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 1 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
+CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
+AND S.DOMAIN_NAME = 'NBL/MX'  
+and lr.location_refnum_value in ('MXC','3EM')  
+
+--MTY
+--BS_NOT_TENDERED_MTY-MX
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where exists(  
+        select 1  
+        from shipment_status ss1  
+        where S.SHIPMENT_GID = SS1.SHIPMENT_GID  
+        and SS1.STATUS_TYPE_GID='NBL/MX.SECURE RESOURCES'  
+        AND SS1.STATUS_VALUE_GID IN ('NBL/MX.SECURE RESOURCES_NOT STARTED')  
+        )  
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 1 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
+CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
+AND S.DOMAIN_NAME = 'NBL/MX'  
+and lr.location_refnum_value in ('MTY','3MZ', '3SV')  
+
+--GDL
+--BS_NOT_TENDERED_GDL-MX
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where exists(  
+        select 1  
+        from shipment_status ss1  
+        where S.SHIPMENT_GID = SS1.SHIPMENT_GID  
+        and SS1.STATUS_TYPE_GID='NBL/MX.SECURE RESOURCES'  
+        AND SS1.STATUS_VALUE_GID IN ('NBL/MX.SECURE RESOURCES_NOT STARTED')  
+        )  
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 1 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
+CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
+AND S.DOMAIN_NAME = 'NBL/MX'  
+and lr.location_refnum_value in ('GDL','3GD')  
+
+--3MX
+--BS_NOT_TENDERED_3MX-MX
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where exists(  
+        select 1  
+        from shipment_status ss1  
+        where S.SHIPMENT_GID = SS1.SHIPMENT_GID  
+        and SS1.STATUS_TYPE_GID='NBL/MX.SECURE RESOURCES'  
+        AND SS1.STATUS_VALUE_GID IN ('NBL/MX.SECURE RESOURCES_NOT STARTED')  
+        )  
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 1 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
+CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
+AND S.DOMAIN_NAME = 'NBL/MX'  
+and lr.location_refnum_value in ('3MX')  
+
+--3TJ
+--BS_NOT_TENDERED_3TJ-MX
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where exists(  
+        select 1  
+        from shipment_status ss1  
+        where S.SHIPMENT_GID = SS1.SHIPMENT_GID  
+        and SS1.STATUS_TYPE_GID='NBL/MX.SECURE RESOURCES'  
+        AND SS1.STATUS_VALUE_GID IN ('NBL/MX.SECURE RESOURCES_NOT STARTED')  
+        )  
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) between CAST(from_tz(cast(sysdate - 1 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and  
+CAST(from_tz(cast(sysdate + 20 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date)  
+AND S.DOMAIN_NAME = 'NBL/MX'  
+and lr.location_refnum_value in ('3TJ')  
+
+
 --BS_ACTUAL_VS_TENDERED_MX
 ------------------------------------------------------------------------------------------------------------
 select s.shipment_gid  
@@ -285,10 +386,108 @@ and not exists ( select 1
                 ) 
 and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) > CAST(from_tz(cast(sysdate - 48/24 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
 and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) < CAST(from_tz(cast(sysdate as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
-and s.domain_name = 'NBL/MX
+and s.domain_name = 'NBL/MX'
 
+--------------Final Querys-----------------
+--MXC
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where (s.user_defined1_icon_gid IS NULL OR s.user_defined1_icon_gid <> 'NBL.SHIP_CONFIRMED') 
+and not exists ( select 1 
+                from shipment_remark sr 
+                where sr.shipment_gid = s.shipment_gid 
+                and remark_qual_gid = 'NBL.SHIP_DATE'
+                ) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) > CAST(from_tz(cast(sysdate - 48/24 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) < CAST(from_tz(cast(sysdate as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and lr.location_refnum_value in ('MXC','3EM') 
 
+--MTY
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where (s.user_defined1_icon_gid IS NULL OR s.user_defined1_icon_gid <> 'NBL.SHIP_CONFIRMED') 
+and not exists ( select 1 
+                from shipment_remark sr 
+                where sr.shipment_gid = s.shipment_gid 
+                and remark_qual_gid = 'NBL.SHIP_DATE'
+                ) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) > CAST(from_tz(cast(sysdate - 48/24 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) < CAST(from_tz(cast(sysdate as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and lr.location_refnum_value in ('MTY','3MZ', '3SV') 
 
+--GDL
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where (s.user_defined1_icon_gid IS NULL OR s.user_defined1_icon_gid <> 'NBL.SHIP_CONFIRMED') 
+and not exists ( select 1 
+                from shipment_remark sr 
+                where sr.shipment_gid = s.shipment_gid 
+                and remark_qual_gid = 'NBL.SHIP_DATE'
+                ) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) > CAST(from_tz(cast(sysdate - 48/24 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) < CAST(from_tz(cast(sysdate as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and lr.location_refnum_value in ('GDL','3GD') 
+
+--3MX
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where (s.user_defined1_icon_gid IS NULL OR s.user_defined1_icon_gid <> 'NBL.SHIP_CONFIRMED') 
+and not exists ( select 1 
+                from shipment_remark sr 
+                where sr.shipment_gid = s.shipment_gid 
+                and remark_qual_gid = 'NBL.SHIP_DATE'
+                ) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) > CAST(from_tz(cast(sysdate - 48/24 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) < CAST(from_tz(cast(sysdate as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and lr.location_refnum_value in ('3MX') 
+
+--3TJ
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where (s.user_defined1_icon_gid IS NULL OR s.user_defined1_icon_gid <> 'NBL.SHIP_CONFIRMED') 
+and not exists ( select 1 
+                from shipment_remark sr 
+                where sr.shipment_gid = s.shipment_gid 
+                and remark_qual_gid = 'NBL.SHIP_DATE'
+                ) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) > CAST(from_tz(cast(sysdate - 48/24 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and UTC.GET_LOCAL_DATE(s.start_time, ss.location_gid) < CAST(from_tz(cast(sysdate as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+and lr.location_refnum_value in ('3TJ') 
+
+--BS_MISSED_PICKUPS_MX
+--Querys
+/*
+BS_MISSED_PICKUPS_MXC_MX
+
+BS_MISSED_PICKUPS_MTY_MX
+
+BS_MISSED_PICKUPS_GDL_MX
+
+BS_MISSED_PICKUPS_3MX_MX
+
+BS_MISSED_PICKUPS_3TJ_MX
+
+WB3-TRANSPORTATION_MX
 /*
 TIMEOUT:
 
@@ -345,3 +544,9 @@ Embarques que no tienen Pickup appointment
 
 rnolasco@niagarawater.com
 mariflores@niagarawater.com
+
+BS_NOT_TENDERED
+
+BUY_SHIPMENT_CUSTOMER_LOGISTICS_SUPERVISOR_MX_1
+
+WB3-TRANSPORTATION_MX

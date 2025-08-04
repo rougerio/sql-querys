@@ -174,3 +174,21 @@ OR_RUSH_ORDERS-MX
 
 Querys a Eliminar
 OR_UNASSIGNED_ORDERS_MX
+*/
+
+
+AND UTC.GET_LOCAL_DATE(ORS.UPDATE_DATE, ORL.SOURCE_LOCATION_GID) 
+--Fecha o fechas de la orden con el TZ de la ubicacion (source,destination)
+--sysdate = fecha actual y hora (servidor UTC)
+--Tipo Date
+--Condicion > BETWEEN 
+CAST(FROM_TZ(CAST(SYSDATE - 7 AS TIMESTAMP), 'UTC') AT TIME ZONE TZ.TIME_ZONE_XID AS DATE) 
+
+1. SYSDATE - 7 
+2. SYSDATE a TIMESTAMP
+3. FROM_TZ convertir el timestamp al TZ que yo eliga (UTC)
+4. Convertir el TimeStamp con el TZ UTC a Date
+5. Cast y la instruccion AT TIME ZONE convierto a Date con su metadata TZ UTC
+
+--DATE Fecha y Hora
+--TIMESTAMP Fecha y Hora + TZ
