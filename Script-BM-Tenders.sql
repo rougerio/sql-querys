@@ -414,7 +414,7 @@ location loc on loc.location_gid = ss.location_gid inner join
 location_refnum lr on lr.location_gid = loc.location_gid and lr.location_refnum_qual_gid = 'ORGID' inner join 
 time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
 where (s.user_defined1_icon_gid IS NULL OR s.user_defined1_icon_gid <> 'NBL.SHIP_CONFIRMED') 
-and not exists ( select 1 
+and not exists (select 1 
                 from shipment_remark sr 
                 where sr.shipment_gid = s.shipment_gid 
                 and remark_qual_gid = 'NBL.SHIP_DATE'

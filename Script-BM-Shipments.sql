@@ -123,3 +123,16 @@ and exists(
                 and SS1.STATUS_VALUE_GID NOT IN ('NBL/MX.SECURE RESOURCES_ACCEPTED')
             ) 
 and s.start_Time > sysdate - 10
+
+
+--WB_SHIPMENT
+
+select s.shipment_gid 
+from shipment s inner join 
+shipment_stop ss on s.shipment_gid = ss.shipment_gid and ss.stop_num = 1 inner join 
+location loc on loc.location_gid = ss.location_gid inner join 
+time_zone tz on tz.time_zone_gid = loc.time_zone_gid 
+where s.domain_name = 'NBL/MX' 
+and utc.get_local_date(s.start_time, ss.location_gid) between cast(from_tz(cast(sysdate - 1 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) and 
+cast(from_tz(cast(sysdate + 7 as timestamp), 'UTC') at time zone tz.time_zone_xid AS date) 
+order by s.start_time asc 
