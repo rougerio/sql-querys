@@ -772,6 +772,9 @@ WHERE CAPACITY_COMMITMENT_ALLOC_GID = 'NBL/MX.MTY_PIEDRAS_NEGRAS_HIGH_25'
 
 
 
+
+
+
 SELECT DISTINCT rg.domain_name,
                 rg.rate_geo_gid,
                 rg.rate_offering_gid,
@@ -819,4 +822,11 @@ WHERE     1 = 1
        AND rg.domain_name = 'NBL/MX'
 ORDER BY cu.start_date
 
-       
+---Analisis de Acapulco
+--Casos de Agosto 2025
+
+SELECT * FROM COMMIT_ALLOC_USAGE_D
+WHERE COMMIT_ALLOC_USAGE_GID = 'NBL/MX.MXC_ACAPULCO_HIGH_25_V2-0087'
+
+SELECT * FROM COMMIT_ALLOC_USAGE
+WHERE CAPACITY_COMMITMENT_ALLOC_GID = 'NBL/MX.MXC_ACAPULCO_HIGH_25_V2'
