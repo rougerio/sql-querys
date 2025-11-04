@@ -1,0 +1,9 @@
+SELECT REPLACE(REPLACE(REPLACE(utl_raw.cast_to_varchar2(utl_encode.base64_encode(utl_raw.concat(utl_i18n.string_to_raw('V1'),'7C',utl_i18n.string_to_raw(regexp_substr(c.user_preference_value,'[^|]+')),'7C',utl_i18n.string_to_raw('0000000000000000','AL32UTF8'),dbms_crypto.encrypt(src=>utl_i18n.string_to_raw(s.shipment_xid,'AL32UTF8'),typ=>4356,KEY=>utl_i18n.string_to_raw(regexp_substr(c.user_preference_value,'[^|]+',1,2),'AL32UTF8'),iv=>utl_i18n.string_to_raw('0000000000000000','AL32UTF8'))))),'+','-'),'/','_'),CHR(13)||CHR(10),null) 
+FROM shipment s, user_preference_d c 
+WHERE shipment_gid=$gid 
+AND c.user_preference_gid='FOUR KITES PREF' 
+AND c.preference_gid='4K_CUSTOMER_ID'
+
+
+INSERT INTO shipment_refnum(shipment_gid,shipment_refnum_qual_gid,domain_name,shipment_refnum_value) 
+SELECT shipment_gid,'FOURKITES_TRACKING_URL',domain_name,$fourkitesurl FROM shipment WHERE shipment_gid=$gid
