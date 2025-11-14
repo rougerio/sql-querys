@@ -96,7 +96,7 @@ hz_cust_accounts hca ON hca.party_id = hp.party_id
 --WHERE TO_CHAR(ooha.request_date, 'DD/MM/YYYY') = '15/09/2025'
 WHERE ooha.request_date >= sysdate-1
 AND hou.organization_id = 2024
-AND (LENGTH(hl.address1) > 50 OR LENGTH(hl.state) > 2)
+--AND (LENGTH(hl.address1) > 50 OR LENGTH(hl.state) > 2)
 GROUP BY ooha.order_number, 
 ooha.cust_po_number, 
 hp.PARTY_NAME,
