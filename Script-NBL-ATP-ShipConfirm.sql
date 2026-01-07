@@ -56,7 +56,7 @@ on t1.header_id = t2.header_id
 --)*/
 --and t1.creation_date = TO_DATE('2025-12-09','YYYY-MM-DD')
 --AND t2.LPN in ('00000275411903692674')
-   and trip_id in ( '5001000119' )
+   and trip_id in ( '51110536' )
 --and trip_id in ('5001000013','5001000019','5001000038','5001000034','5001000035','5001000036','5001000037')
 --AND t2.PROCESS_STATUS = 'Grouped'
 --AND T2.ITEM_NUMBER='SMV20Z24PDSMCH';
