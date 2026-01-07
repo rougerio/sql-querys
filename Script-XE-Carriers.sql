@@ -51,15 +51,17 @@ select *
     order by ca.servprov
 ) t
  where 1 = 1
-   and t.new_id is null
-   and t.tarifa_activa = 'Y'
-   and t.servprov in ( 'CAR-4674332',
+   and t.new_id is not null
+   --and t.tarifa_activa = 'Y'
+   /*and t.servprov in ( 'CAR-4674332',
     --'CAR-3771504',
     --'CAR-4703769',
     --'CAR-3127499',
                        'CAR-2205296'
     --'CAR-4795172'
-                        );
+                        )*/
+   and t.servprov = 'CAR-3073521'
+ order by t.razon_social;
 
 
 select servprov_gid,
