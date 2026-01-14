@@ -56,7 +56,7 @@ on t1.header_id = t2.header_id
 --)*/
 --and t1.creation_date = TO_DATE('2025-12-09','YYYY-MM-DD')
 --AND t2.LPN in ('00000275411903692674')
-   and trip_id in ( '5001001033' )
+   and trip_id in ( '5001000641' )
 --and trip_id in ('5001000013','5001000019','5001000038','5001000034','5001000035','5001000036','5001000037')
 --AND t2.PROCESS_STATUS = 'Grouped'
 --AND T2.ITEM_NUMBER='SMV20Z24PDSMCH';
@@ -223,7 +223,7 @@ select ship_from_org_id,
           ) as rn
      from xxnbl_intg.nbl_shipconfirm_stg_hdr
     where ship_from_org_id in ( '300000008059577',
-                                '300000008059641',
+                                '300000008059641',`
                                 '300000008059653',
                                 '300000084227497',
                                 '300000086880154',
@@ -243,56 +243,25 @@ select ship_from_org_id,
 
 ---------------------------------Lines Old---------------------------------
 
-select ship_from_org_id,
-       trip_id,
-       count(*),
-       error_msg,
-       line_error_msg,
-       creation_date,
-       line_id,
-       line_number,
-       lot_number
+select ship_from_org_id, trip_id, creation_date, line_id,
+       line_number, lot_number, error_msg, line_error_msg
   from (
    select t1.ship_from_org_id,
           t1.trip_id,
           t1.delivery_id,
+          row_number() over(partition by t1.trip_id order by t1.creation_date desc) as rn,
           t1.so_number,
           t1.purchase_order_number,
           t1.transportation_shipment_id,
           t1.ship_from_name,
           t1.status_code,
-          t1.status_note,
+          t1.status_note, 
           t1.remarks,
           t1.error_msg,
           t1.source_system,
           t2.line_id,
           t2.line_number,
           t2.lot_number,
-          to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                       'DD-MON-RR HH.MI.SS.FF AM') creation_date,
-          extract(year from to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                    'DD-MON-RR HH.MI.SS.FF AM')) year,
-          extract(month from to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                    'DD-MON-RR HH.MI.SS.FF AM')) month,
-          extract(day from to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                    'DD-MON-RR HH.MI.SS.FF AM')) day,
-          extract(hour from to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                    'DD-MON-RR HH.MI.SS.FF AM')) hour,
           t1.ship_from_org,
           t1.release_rule,
           t1.validation_status,
@@ -304,34 +273,24 @@ select ship_from_org_id,
           t1.shipconfirm_response,
           t1.subinventory,
           t2.error_msg line_error_msg,
-          row_number()
-          over(partition by t1.trip_id
-               order by t1.creation_date desc
-          ) as rn
-     from xxnbl_intg.nbl_shipconfirm_stg_hdr t1
-     left join nbl_shipconfirm_stg_lines t2
-   on t1.header_id = t2.header_id
-    where t1.ship_from_org_id in ( '300000008059577',
+          t1.creation_date
+   from xxnbl_intg.nbl_shipconfirm_stg_hdr t1 left join 
+   nbl_shipconfirm_stg_lines t2 on t1.header_id = t2.header_id
+   where t1.ship_from_org_id in ( '300000008059577',
                                    '300000008059641',
                                    '300000008059653',
                                    '300000084227497',
                                    '300000086880154',
                                    '300000037236624' )
-    order by t1.trip_id
+   and t1.trip_id = '51110083'
+   order by t1.trip_id
 )
- where 1 = 1
-   and rn = 1
-   and ( error_msg is not null
-    or status_note = 'UNPROCESSED' )
-    --AND ERROR_MSG = 'Release Rule Not Found'
- group by error_msg,
-          line_error_msg,
-          ship_from_org_id,
-          trip_id,
-          creation_date,
-          line_id,
-          line_number,
-          lot_number;
+where 1 = 1
+--and rn = 1
+and ( error_msg is not null or status_note = 'UNPROCESSED' )
+/*group by error_msg, line_error_msg, ship_from_org_id, trip_id, 
+         creation_date, line_id, line_number, lot_number*/
+;
 
 
 
