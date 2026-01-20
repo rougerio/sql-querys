@@ -1,0 +1,139 @@
+
+--INVOICE FAILED TO MATCH
+SELECT DISTINCT 
+    i.INVOICE_GID,
+    i.INVOICE_XID,i.indicator, i.INVOICE_NUMBER, I.SERVPROV_GID, i.SERVPROV_ALIAS_VALUE,ROUND(i.NET_AMOUNT_DUE,2) AS COST,ir.INVOICE_REFNUM_QUAL_GID,
+ir.INVOICE_REFNUM_VALUE 
+FROM INVOICE i, invoice_refnum ir, INVOICE_lineitem ill, INVOICE_STATUS ISS 
+where i.INVOICE_GID = ir.INVOICE_GID 
+and i.INVOICE_GID = ill.INVOICE_GID 
+AND i.INVOICE_GID = iSS.INVOICE_GID 
+and INVOICE_REFNUM_QUAL_GID = 'NBL.LOAD_NO' 
+and i.insert_date > (sysdate-10)
+AND ISS.STATUS_TYPE_GID LIKE '%MATCH%' 
+AND ISS.INSERT_DATE > (SYSDATE-10) 
+AND SERVPROV_ALIAS_VALUE NOT LIKE 'NBL.CAR-%' 
+AND I.INDICATOR NOT IN ('G') 
+AND ir.INVOICE_REFNUM_VALUE LIKE 'NBL/MX.MX5%'
+;
+
+
+select *
+from (
+    SELECT DISTINCT 
+        i.INVOICE_GID,
+        i.INVOICE_XID,
+        i.indicator, 
+        i.INVOICE_NUMBER, 
+        I.SERVPROV_GID, 
+        i.SERVPROV_ALIAS_VALUE,
+        ROUND(i.NET_AMOUNT_DUE,2) AS COST,
+        ir.INVOICE_REFNUM_QUAL_GID,
+        ir.INVOICE_REFNUM_VALUE,
+        SUBSTR(I.SERVPROV_GID, 9, LENGTH(I.SERVPROV_GID) - 7) AS CARRIER_SHORTNAME
+        --REGEXP_LIKE(, '^[[:digit:]]+$')
+    FROM INVOICE i inner JOIN
+    invoice_refnum ir on i.INVOICE_GID = ir.INVOICE_GID inner join
+    INVOICE_lineitem ill on i.INVOICE_GID = ill.INVOICE_GID inner join
+    INVOICE_STATUS ISS on i.INVOICE_GID = iSS.INVOICE_GID 
+    where 1 = 1
+    --and INVOICE_REFNUM_QUAL_GID = 'NBL.LOAD_NO' 
+    and i.insert_date > (sysdate-20)
+    --AND ISS.STATUS_TYPE_GID LIKE '%MATCH%' 
+    AND ISS.INSERT_DATE > (SYSDATE-20) 
+    AND SERVPROV_ALIAS_VALUE NOT LIKE 'NBL.CAR-%' 
+    AND I.INDICATOR NOT IN ('G') 
+    AND ir.INVOICE_REFNUM_VALUE LIKE 'NBL/MX.MX5%'
+)
+WHERE REGEXP_LIKE(CARRIER_SHORTNAME, '^[[:digit:]]+$')
+;
+
+
+--Invoice
+SELECT i.insert_date-8/24, i.INVOICE_GID,i.indicator, i.INVOICE_NUMBER, i.SERVPROV_ALIAS_VALUE,i.servprov_gid, 
+ir.INVOICE_REFNUM_VALUE,inn.TIMESTAMP, inn.SUMMARY, inn.NOTE, inn.IS_SYSTEM_GENERATED 
+FROM INVOICE i, invoice_refnum ir, INVOICE_lineitem ill, invoice_note inn 
+where i.INVOICE_GID = ir.INVOICE_GID 
+and i.INVOICE_GID = ill.INVOICE_GID 
+and i.INVOICE_GID = inn.INVOICE_GID 
+and INVOICE_REFNUM_QUAL_GID = 'NBL.LOAD_NO' 
+and i.insert_date > (sysdate-10) 
+and  SERVPROV_ALIAS_VALUE NOT LIKE 'NBL.CAR-%' 
+AND I.INDICATOR NOT IN ('G') 
+AND ir.INVOICE_REFNUM_VALUE LIKE 'NBL.NB5%'
+;
+
+--Invoice this one
+SELECT DISTINCT i.insert_date-8/24, i.INVOICE_GID,i.indicator, i.INVOICE_NUMBER, i.SERVPROV_ALIAS_VALUE,i.servprov_gid,
+ir.INVOICE_REFNUM_VALUE,s.servprov_gid as shipment_carrier, inn.TIMESTAMP, inn.SUMMARY, inn.NOTE 
+FROM INVOICE i, invoice_refnum ir,  invoice_note inn, shipment s 
+where i.INVOICE_GID = ir.INVOICE_GID 
+and  i.INVOICE_GID = inn.INVOICE_GID 
+and INVOICE_REFNUM_QUAL_GID = 'NBL.LOAD_NO' 
+and i.insert_date > (sysdate-10) 
+and  SERVPROV_ALIAS_VALUE NOT LIKE 'NBL.CAR-%' 
+AND I.INDICATOR = ('W') 
+AND ir.INVOICE_REFNUM_VALUE = s.shipment_gid 
+and i.invoice_gid like 'NBL.2%' 
+and i.servprov_gid != s.servprov_gid
+;
+
+--invoice for summary
+SELECT distinct i.insert_date-8/24, i.INVOICE_GID,i.indicator, i.INVOICE_NUMBER, i.SERVPROV_ALIAS_VALUE,i.servprov_gid, 
+ir.INVOICE_REFNUM_VALUE 
+FROM INVOICE i, invoice_refnum ir, INVOICE_lineitem ill, invoice_note inn 
+where i.INVOICE_GID = ir.INVOICE_GID 
+and i.INVOICE_GID = ill.INVOICE_GID 
+and i.INVOICE_GID = inn.INVOICE_GID 
+and INVOICE_REFNUM_QUAL_GID = 'NBL.LOAD_NO' 
+and i.insert_date > (sysdate-30) 
+and  SERVPROV_ALIAS_VALUE NOT LIKE 'NBL.CAR-%' 
+AND I.INDICATOR NOT IN ('G') 
+and i.invoice_gid like '%NBL.2%'
+
+--INVOICES WITH VOUCHERS
+
+select V.INSERT_DATE, V.VOUCHER_XID,I.INVOICE_XID,I.INVOICE_DATE,I.INVOICE_TYPE,I.INVOICE_SOURCE,I.INVOICE_NUMBER,I.SERVPROV_ALIAS_QUAL_GID,
+I.SERVPROV_ALIAS_VALUE,I.USER_DEFINED1_ICON_GID,I.SERVPROV_GID,S.SHIPMENT_XID,S.SOURCE_LOCATION_GID,S.DEST_LOCATION_GID,S.SERVPROV_GID 
+from voucher v, INVOICE i, invoice_refnum ir, shipment s 
+where v.invoice_gid = i.invoice_gid 
+and i.INVOICE_GID = ir.INVOICE_GID 
+and ir.INVOICE_REFNUM_QUAL_GID = 'NBL.LOAD_NO' 
+and ir.INVOICE_REFNUM_VALUE = s.shipment_gid 
+and I.invoice_gid = 'NBL.20260117-0001238'
+
+
+--INVOICES WITH VOUCHERS with shipment stops
+
+select V.INSERT_DATE, V.VOUCHER_XID,I.INVOICE_XID,I.INVOICE_DATE,I.INVOICE_TYPE,I.INVOICE_SOURCE,I.INVOICE_NUMBER,I.SERVPROV_ALIAS_QUAL_GID,I.SERVPROV_ALIAS_VALUE,I.USER_DEFINED1_ICON_GID,I.SERVPROV_GID,
+S.SHIPMENT_XID,S.SOURCE_LOCATION_GID,S.DEST_LOCATION_GID,S.SERVPROV_GID, ss.STOP_NUM, ss.LOCATION_GID
+from voucher v, INVOICE i, invoice_refnum ir, shipment s, shipment_stop ss
+where v.invoice_gid = i.invoice_gid 
+and i.INVOICE_GID = ir.INVOICE_GID 
+and ir.INVOICE_REFNUM_QUAL_GID = 'NBL.LOAD_NO' 
+and ir.INVOICE_REFNUM_VALUE = s.shipment_gid 
+and ss.shipment_gid = s.shipment_gid 
+and I.invoice_gid = 'NBL.20260117-0001238'
+
+
+--Shipments with invoice with vouchers or null
+SELECT S.SHIPMENT_gID,S.RATE_OFFERING_GID, S.SOURCE_LOCATION_GID,S.DEST_LOCATION_GID,S.SERVPROV_GID,  ss.STOP_NUM, ss.LOCATION_GID, V.INSERT_DATE, V.VOUCHER_XID,I.INVOICE_gID,I.INVOICE_DATE,I.INVOICE_TYPE,I.INVOICE_SOURCE,I.INVOICE_NUMBER,I.SERVPROV_ALIAS_QUAL_GID,I.SERVPROV_ALIAS_VALUE,I.USER_DEFINED1_ICON_GID,I.SERVPROV_GID
+from shipment s
+left join invoice_refnum ir
+on ir.INVOICE_REFNUM_QUAL_GID = 'NBL.LOAD_NO' and ir.INVOICE_REFNUM_VALUE = s.shipment_gid
+left join invoice i
+on ir.invoice_gid = i.invoice_gid
+LEFT JOIN VOUCHER V
+ON V.INVOICE_GID = I.INVOICE_GID
+left join LOCATION l
+on L.LOCATION_GID = S.SOURCE_LOCATION_GID
+left join shipment_stop ss
+on s.shipment_gid = ss.shipment_gid
+WHERE I.insert_date > (sysdate-90) 
+AND V.VOUCHER_GID IS NULL
+and L.ATTRIBUTE2 = 'EBS_LOCATION'
+and s.domain_name = 'NBL'
+and s.rate_offering_gid not like '%CPU%'
+and s.rate_offering_gid not like '%FLEET%'
+and s.rate_offering_gid not like '%VENDOR%'
+and s.shipment_gid like 'NBL.NB%'
