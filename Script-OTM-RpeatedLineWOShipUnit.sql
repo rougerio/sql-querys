@@ -147,8 +147,6 @@ AND SH.SHIPMENT_GID = 'NBL.NB54122954'
 --------------------------------------------Final Item >2-----------------------------------------
 
 
-
-
 SELECT SHIP.SHIPMENT_GID, 
 SHIP.REMARK_SEQUENCE, 
 SHIP.REMARK_QUAL_GID, 
@@ -188,14 +186,14 @@ ORDER_MOVEMENT OM ON OM.ORDER_RELEASE_GID = ORD.ORDER_RELEASE_GID INNER JOIN
                     FROM ORDER_RELEASE ORE INNER JOIN  
                     ORDER_RELEASE_LINE ORL ON ORE.ORDER_RELEASE_GID = ORL.ORDER_RELEASE_GID  
                     WHERE 1 = 1  
-                    AND ORL.DOMAIN_NAME = 'NBL'  
+                    AND ORL.DOMAIN_NAME = 'NBL/MX'  
                     AND ORL.UPDATE_DATE >= to_date('2026-01-01','YYYY-MM-DD')  
                     AND ORL.ORDER_RELEASE_LINE_GID NOT IN (  
                             SELECT SUL.ORDER_RELEASE_LINE_GID  
                             FROM SHIP_UNIT_LINE SUL INNER JOIN  
                             ORDER_RELEASE_LINE ORL ON SUL.ORDER_RELEASE_LINE_GID = ORL.ORDER_RELEASE_LINE_GID  
                             WHERE 1 = 1  
-                            AND ORL.DOMAIN_NAME = 'NBL'  
+                            AND ORL.DOMAIN_NAME = 'NBL/MX'  
                             AND ORL.UPDATE_DATE >= to_date('2026-01-01','YYYY-MM-DD')  
                     )  
             ) 
