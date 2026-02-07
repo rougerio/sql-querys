@@ -97,7 +97,7 @@ CROSS JOIN XMLTABLE(
   PASSING XMLTYPE(itc.xml_blob)
   COLUMNS user_classification3 VARCHAR2(10) PATH 'USER_CLASSIFICATION3'
 ) x
-WHERE itc.i_transaction_no = 801119723
+WHERE itc.i_transaction_no = 780951802
 AND ROWNUM = 1
 ;
 
@@ -125,20 +125,11 @@ FROM
         COLUMNS 
             Xid VARCHAR2(50) PATH '/TransOrder/TransOrderHeader/TransOrderGid/Gid/Xid' 
     ) xt 
-WHERE itc.i_transaction_no = 776799254
+WHERE itc.i_transaction_no = 779579313
     ;
 
 
-
-SELECT * 
-FROM
-    i_transaction itc
-WHERE
-    itc.i_transaction_no = 
-    
-
-
-    SELECT 
+SELECT 
     xt.Xid 
 FROM 
     i_transaction itc, 
@@ -151,4 +142,4 @@ FROM
         COLUMNS 
             Xid VARCHAR2(50) PATH '/TransOrder/TransOrderHeader/TransOrderGid/Gid/Xid' 
     ) xt 
-WHERE TO_CHAR(ITMS.INSERT_DATE, 'DD/MM/YYYY') >= '20/05/2025'
+WHERE TO_CHAR(itc.INSERT_DATE, 'DD/MM/YYYY') >= '29/05/2026'

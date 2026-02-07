@@ -300,108 +300,115 @@ select ship_from_org_id,
       trip_id,
       error_msg,
       line_error_msg,
-       creation_date,
-       line_id,
-       line_number,
-       lot_number,
-       item_number,
-       item_id,
-       rn
-  from (
+      creation_date,
+      line_id,
+      line_number,
+      lot_number,
+      item_number,
+      item_id,
+      rn
+from (
    select t1.ship_from_org_id,
-          t1.trip_id,
-          t1.delivery_id,
-          t1.so_number,
-          t1.purchase_order_number,
-          t1.transportation_shipment_id,
-          t1.ship_from_name,
-          t1.status_code,
-          t1.status_note,
-          t1.remarks,
-          t1.error_msg,
-          t1.source_system,
-          t2.line_id,
-          t2.line_number,
-          t2.lot_number,
-          to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                       'DD-MON-RR HH.MI.SS.FF AM') creation_date,
-          extract(year from to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                    'DD-MON-RR HH.MI.SS.FF AM')) year,
-          extract(month from to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                    'DD-MON-RR HH.MI.SS.FF AM')) month,
-          extract(day from to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                    'DD-MON-RR HH.MI.SS.FF AM')) day,
-          extract(hour from to_timestamp(to_char(
-             t1.creation_date,
-             'DD-MON-YY HH12.MI.SS'
-          ),
-                    'DD-MON-RR HH.MI.SS.FF AM')) hour,
-          t1.ship_from_org,
-          t1.release_rule,
-          t1.validation_status,
-          t1.pick_wave_status,
-          t1.pick_wave_batchname,
-          t1.pickslip_status,
-          t1.pickslip_response,
-          t1.shipconfirm_status,
-          t1.shipconfirm_response,
-          t1.subinventory,
-          t2.error_msg line_error_msg,
-          t2.item_number,
-          t2.item_id,
-          row_number()
-          over(partition by t1.trip_id
+         t1.trip_id,
+         t1.delivery_id,
+         t1.so_number,
+         t1.purchase_order_number,
+         t1.transportation_shipment_id,
+         t1.ship_from_name,
+         t1.status_code,
+         t1.status_note,
+         t1.remarks,
+         t1.error_msg,
+         t1.source_system,
+         t2.line_id,
+         t2.line_number,
+         t2.lot_number,
+         to_timestamp(to_char(
+            t1.creation_date,
+            'DD-MON-YY HH12.MI.SS'
+         ), 'DD-MON-RR HH.MI.SS.FF AM') creation_date,
+         extract(year from to_timestamp(to_char(
+            t1.creation_date,
+            'DD-MON-YY HH12.MI.SS'
+         ), 'DD-MON-RR HH.MI.SS.FF AM')) year,
+         extract(month from to_timestamp(to_char(
+            t1.creation_date,
+            'DD-MON-YY HH12.MI.SS'
+         ), 'DD-MON-RR HH.MI.SS.FF AM')) month,
+         extract(day from to_timestamp(to_char(
+            t1.creation_date,
+            'DD-MON-YY HH12.MI.SS'
+         ),'DD-MON-RR HH.MI.SS.FF AM')) day,
+         extract(hour from to_timestamp(to_char(
+            t1.creation_date,
+            'DD-MON-YY HH12.MI.SS'
+         ),'DD-MON-RR HH.MI.SS.FF AM')) hour,
+         t1.ship_from_org,
+         t1.release_rule,
+         t1.validation_status,
+         t1.pick_wave_status,
+         t1.pick_wave_batchname,
+         t1.pickslip_status,
+         t1.pickslip_response,
+         t1.shipconfirm_status,
+         t1.shipconfirm_response,
+         t1.subinventory,
+         t2.error_msg line_error_msg,
+         t2.item_number,
+         t2.item_id,
+         row_number()
+         over(partition by t1.trip_id
                order by t1.creation_date desc
-          ) as rn
-     from xxnbl_intg.nbl_shipconfirm_stg_hdr t1
-     left join nbl_shipconfirm_stg_lines t2
+         ) as rn
+   from xxnbl_intg.nbl_shipconfirm_stg_hdr t1
+   left join nbl_shipconfirm_stg_lines t2
    on t1.header_id = t2.header_id
-    where t1.ship_from_org_id in ( '300000008059577',
-                                   '300000008059641',
-                                   '300000008059653',
-                                   '300000084227497',
-                                   '300000086880154',
-                                   '300000037236624' )
+   where t1.ship_from_org_id in ( '300000008059577',
+                                 '300000008059641',
+                                 '300000008059653',
+                                 '300000084227497',
+                                 '300000086880154',
+                                 '300000037236624' )
       and ( t1.error_msg is not null
-       or t2.error_msg is not null )
+      or t2.error_msg is not null )
       --and t1.trip_id = '5001000289'
-    order by t1.trip_id
+   order by t1.trip_id
 ) t
- where 1 = 1
+where 1 = 1
 --and rn = 1
    and ( line_error_msg is not null
-    or status_note = 'UNPROCESSED' )
- group by rn,
-          error_msg,
-          line_error_msg,
-          ship_from_org_id,
-          trip_id,
-          creation_date,
-          line_id,
-          line_number,
-          lot_number,
-          item_number,
-          item_id
- order by trip_id;
+   or status_note = 'UNPROCESSED' )
+group by rn,
+         error_msg,
+         line_error_msg,
+         ship_from_org_id,
+         trip_id,
+         creation_date,
+         line_id,
+         line_number,
+         lot_number,
+         item_number,
+         item_id
+order by trip_id;
 
 
 select t2.*
-  from xxnbl_intg.nbl_shipconfirm_stg_hdr t1
-  left join nbl_shipconfirm_stg_lines t2
+from xxnbl_intg.nbl_shipconfirm_stg_hdr t1
+left join nbl_shipconfirm_stg_lines t2
 on t1.header_id = t2.header_id
- where t1.trip_id = '5001001033'
- order by t2.creation_date desc
+where t1.trip_id = '5001001033'
+order by t2.creation_date desc
 --and t2.creation_date = to_date('2026-01-12','YYYY-MM-DD')
- ;
+;
+
+SELECT * 
+FROM nbl_shipconfirm_stg_lines
+--WHERE LPN LIKE '008002%'
+WHERE LPN IN ('00800275411107227814', '00800275411106836901', '00800275411107225742')
+;
+
+/*
+00800275411107227814
+00800275411106836901
+00800275411107225742
+*/
