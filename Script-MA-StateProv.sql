@@ -3,7 +3,9 @@ select * from shipment;
 select * from orders;
 select * from ilm_appointments;
 SELECT * FROM STATE_PROV;
- 
+select * from tran_log_message;
+select * from tran_log;
+
 ALTER SESSION SET CURRENT_SCHEMA = MTY_WMS;
 
 SELECT * FROM STATE_PROV
