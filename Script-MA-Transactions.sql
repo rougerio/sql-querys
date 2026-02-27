@@ -1,5 +1,7 @@
 
-ALTER SESSION SET CURRENT_SCHEMA = MTY_WMS;
+ALTER SESSION SET CURRENT_SCHEMA = MXC_WMS;
+
+ALTER SESSION SET NLS_DATE_FORMAT = 'dd/mm/yyyy hh24:mi:ss';
 
 SELECT * 
 FROM TRAN_LOG
@@ -74,3 +76,33 @@ OBJECT_REASON_CODES
 
 SYSTEM_CODE
 TRANS_RESP_CODE
+
+
+
+SELECT * 
+FROM cl_message INNER JOIN
+cl_endpoint_queue ON cl_message.msg_id = cl_endpoint_queue.msg_id
+WHERE 1 = 1 
+AND cl_message.source_id = 'SDM TO WM'
+--AND cl_message.MSG_ID = '14883244'
+AND cl_message.data LIKE '%5001013953%'
+AND cl_endpoint_queue.status <> 5;
+
+SELECT * 
+FROM cl_endpoint_queue
+WHERE MSG_ID = '14885252';
+
+SELECT * 
+FROM msg_log 
+where 1 = 1
+--AND pgM_Id like '%SU_EXT%'
+AND MSG LIKE '%41370007%'--IN ('00400275411100370601','00400275411100370618')
+ORDER BY LOG_DATE_TIME DESC
+;
+
+14900381
+14885252
+
+00400275411100370540
+
+Cannot Find Open Line to Load Item: BUR22Z24PZGRHCT on Order 41370007
