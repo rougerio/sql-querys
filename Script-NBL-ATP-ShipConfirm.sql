@@ -40,9 +40,8 @@ select t1.creation_date,
    --t2.mfg_date,
    --t2.exp_date,
    --t1.process_msg
-from nbl_shipconfirm_stg_hdr t1
-left join nbl_shipconfirm_stg_lines t2
-on t1.header_id = t2.header_id
+from nbl_shipconfirm_stg_hdr t1 left join 
+nbl_shipconfirm_stg_lines t2 on t1.header_id = t2.header_id
 where 1 = 1 
 --and TRIP_ID In ('53617927')
 --'53615300',
@@ -56,7 +55,7 @@ where 1 = 1
 --)*/
 --and t1.creation_date = TO_DATE('2025-12-09','YYYY-MM-DD')
 --AND t2.LPN in ('00000275411903692674')
-   and trip_id in ( '54220482' )
+   and trip_id IN ('53621339', '53621340')
 --and trip_id in ('5001000013','5001000019','5001000038','5001000034','5001000035','5001000036','5001000037')
 --AND t2.PROCESS_STATUS = 'Grouped'
 --AND T2.ITEM_NUMBER='SMV20Z24PDSMCH';
@@ -276,18 +275,20 @@ from (
          t1.creation_date
    from xxnbl_intg.nbl_shipconfirm_stg_hdr t1 left join 
    nbl_shipconfirm_stg_lines t2 on t1.header_id = t2.header_id
-   where t1.ship_from_org_id in ( '300000008059577',
+   where 1 = 1
+   /*t1.ship_from_org_id in ( '300000008059577',
                                  '300000008059641',
                                  '300000008059653',
                                  '300000084227497',
                                  '300000086880154',
                                  '300000037236624' )
-   and t1.trip_id = '51110083'
+   */
+   and t1.trip_id IN ('53621339', '53621340')
    order by t1.trip_id
 )
 where 1 = 1
 --and rn = 1
-and ( error_msg is not null or status_note = 'UNPROCESSED' )
+--and ( error_msg is not null or status_note = 'UNPROCESSED' )
 /*group by error_msg, line_error_msg, ship_from_org_id, trip_id, 
          creation_date, line_id, line_number, lot_number*/
 ;
