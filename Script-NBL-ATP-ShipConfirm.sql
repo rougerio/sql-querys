@@ -283,7 +283,7 @@ from (
                                  '300000086880154',
                                  '300000037236624' )
    */
-   and t1.trip_id IN ('53621339', '53621340')
+   and t1.trip_id IN ('53621414', '53621415')
    order by t1.trip_id
 )
 where 1 = 1
@@ -293,7 +293,8 @@ where 1 = 1
          creation_date, line_id, line_number, lot_number*/
 ;
 
-
+NB53621414 - 40083180 - NDM05L40PDRHCN 48
+NB53621415 - 40083162 -  NDM05L40PDRHCN 48
 
 --5001000289
 ----------------------------------Query Lines----------------------------------
@@ -393,11 +394,11 @@ group by rn,
 order by trip_id;
 
 
-select t2.*
+select t1.*
 from xxnbl_intg.nbl_shipconfirm_stg_hdr t1
 left join nbl_shipconfirm_stg_lines t2
 on t1.header_id = t2.header_id
-where t1.trip_id = '5001001033'
+--where t1.trip_id like  '5362%' --IN ('53621414', '53621415')
 order by t2.creation_date desc
 --and t2.creation_date = to_date('2026-01-12','YYYY-MM-DD')
 ;

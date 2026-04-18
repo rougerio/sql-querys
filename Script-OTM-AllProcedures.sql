@@ -1,0 +1,4 @@
+SELECT * 
+FROM all_procedures 
+WHERE object_type = 'PACKAGE' AND owner = 'GLOGOWNER'
+ORDER BY OWNER, PROCEDURE_NAME;
